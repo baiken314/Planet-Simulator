@@ -1,0 +1,64 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: sans-serif;
+    font-size: 12px;
+}
+
+canvas {
+    background-color: #090909;
+    display: block;
+    width: 100%;
+    height: calc(100vh - 75px); /* Adjust height according to input area */
+}
+
+#input-area {
+    height: 75px;
+    width: 100%;
+    background-color: #555;
+    display: flex;
+    align-items: center;
+    overflow-y: hidden;
+    padding: 0 10px;
+}
+
+.input-label {
+    font-size: 15px;
+    font-weight: bold;
+    color: #f8f8f8;
+    margin-bottom: 5px;
+}
+
+.input-textbox {
+    vertical-align: center;
+    padding: 5px;
+    height: 34px;
+    width: 110px;
+    resize: none;
+    font-size: 20px;
+    font-family: monospace;
+}
+
+.input-box {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-right: 10px;
+}
+
+#movable-checkbox {
+    margin-top: 5px;
+}
+
+#make-orbit-btn {
+    background-color: #222;
+    color: #f8f8f8;
+    text-align: center;
+    padding: 10px;
+    cursor: pointer;
+}
+
+#make-orbit-btn:hover {
+    background-color: #777;
+}

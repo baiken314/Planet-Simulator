@@ -1,5 +1,8 @@
-var canvas = document.getElementById("mainCanvas");
-var ctx = canvas.getContext("2d");
+/*
+* Mass simulator
+* Author: Bradley Aiken
+* Date: 17-08-19
+*/
 
 /******************************************
 * WORD GENERATOR
@@ -8,7 +11,7 @@ const cons = ['b', 'p', 's', 'z', 't', 'd', 'k', 'g', 'ch', 'sh', 'j', 'f', 'w',
 const ycons = ['ty', 'sy', 'my', 'ny', 'ky', 'ry', 'ngy'];
 const vowels = ['a', 'e', 'i', 'o', 'u'];
 const diphs = ['ai', 'ia', 'aio', 'aie', 'ei', 'ie', 'io', 'oe', 'ou', 'ue', 'ua', 'uo', 'aoi'];
-const endcons = ['n', 's'];
+const endcons = ['n', 's', 't', 'd', 'k', 'g', 'm', 'r', 'l', 'p', 'b', 'f', 'v', 'z', 'sh', 'ch', 'j', 'ts', 'sk', 'ks', 'h', 'y', 'w'];
 
 String.prototype.capitalize = function() {
     return this.charAt(0).toUpperCase() + this.slice(1)
@@ -29,7 +32,7 @@ function makeSyllable(vowel) {
     else {
         string += getRandom(diphs);
     }
-    if (Math.random() < .15) {
+    if (Math.random() < .65) {
         string += getRandom(endcons);
     }
     return string;
@@ -55,7 +58,12 @@ function makeWord() {
     return string;
 }
 
-// initialize variables
+/******************************************
+* INITILIZATION
+******************************************/
+var canvas = document.getElementById("mainCanvas");
+var ctx = canvas.getContext("2d");
+
 var mouseX = undefined;
 var mouseY = undefined;
 var xoff = 0;
@@ -66,16 +74,6 @@ const GRAVITY = 1;
 var balls = [];
 var aim;
 var aimfuture = 100;
-
-var colors = [
-	"#d04040",
-	"#40d040",
-	"#d08040",
-	"#b040d0",
-	"#4080d0",
-	"SlateBlue",
-	"#787878",
-];
 
 // static functions
 function init() {
@@ -88,15 +86,62 @@ function changeScreenSize() {
 }
 
 function makeBall() {
-	var parameters = document.getElementById("input-textbox").value.split(" ");
-	var valid = true;
+	var newDx = parseFloat(document.getElementById("x-velocity-textbox").value);
+	var newDy = parseFloat(document.getElementById("y-velocity-textbox").value);
+	var newMass = parseFloat(document.getElementById("mass-textbox").value);
+	var isMovable = document.getElementById("movable-checkbox").checked;
+	balls.push(new Ball(mouseX + xoff, mouseY + yoff, newDx, newDy, newMass, isMovable));
+}
 
-	for (var i = 0; i < 3; i++) {
-		parameters[i] = parseFloat(parameters[i]);
-	}
+function findPath() {
+	if (balls.length > 0) {
+		var longestPath = 0;
+		var longestX = 0;
+		var longestY = 0;
+		var longestDx = 0;
+		var longestDy = 0;
+		var pathLength, newX, newY, newDx, newDy, newMass, pathBall, inBounds, valid;
+		for (var i = 0; i < 5000; i++) {
+			pathLength = 0;
+			newX = Math.floor(Math.random() * innerWidth) + xoff;
+			newY = Math.floor(Math.random() * innerHeight) + yoff;
+			newDx = Math.random() * 10 - 5;
+			newDy = Math.random() * 10 - 5;
+			newMass = parseFloat(document.getElementById("mass-textbox").value);
+			pathBall = new Ball(newX, newY, newDx, newDy, newMass);
+			inBounds = true;
+			valid = true;
 
-	if (valid) {
-		balls.push(new Ball(mouseX + xoff, mouseY + yoff, parameters[0], parameters[1], parameters[2], parseInt(parameters[3])));
+			while (inBounds && pathLength < 15000 && longestPath < 15000) {
+				pathLength++;
+				for (var j = 0; j < balls.length; j++) {
+					pathBall.adjustVelocity(balls[j]);
+				}
+				pathBall.update();
+				if (pathBall.x < 0 + xoff || pathBall.y < 0 + yoff || pathBall.x > innerWidth + xoff || pathBall.y > innerHeight - document.getElementById("input-area").clientHeight + yoff) {
+					inBounds = false;
+					valid = false;
+					pathLength = 0;
+				}
+				for (var j = 0; j < balls.length; j++) {
+					if (pathBall.collidesWith(balls[j]) && inBounds) {
+						inBounds = false;
+						break;
+					}
+				}
+				if (pathLength > longestPath && valid && inBounds) {
+					longestPath = pathLength;
+					longestX = newX;
+					longestY = newY;
+					longestDx = newDx;
+					longestDy = newDy;
+				}
+			}
+		}
+
+		document.getElementById("test-box").innerHTML = longestPath;
+		if (longestPath > 0)
+			balls.push(new Ball(longestX, longestY, longestDx, longestDy, parseFloat(document.getElementById("mass-textbox").value)));
 	}
 }
 
@@ -111,8 +156,8 @@ function Ball(x, y, dx, dy, mass, movable=true) {
 	this.movable = movable;
 	this.isAim = false;
 	this.name = makeWord().capitalize();
-	this.radius = .2 * Math.pow(Math.log(this.mass), 2.6); //((mass/Math.PI)*(3/4))*(1/3);
-	this.color = colors[Math.floor(Math.random() * colors.length)];
+	this.radius = .3 * Math.pow(Math.log(this.mass), 2.5); //((mass/Math.PI)*(3/4))*(1/3);
+	this.color = "hsl(" + Math.floor(Math.random() * 360) + ", " + (Math.floor(Math.random() * 40) + 35) + "%, " + (Math.floor(Math.random() * 40) + 35) + "%)";
 
 	this.draw = function() {
 		ctx.beginPath();
@@ -137,7 +182,7 @@ function Ball(x, y, dx, dy, mass, movable=true) {
 			this.x += this.dx;
 			this.y += this.dy;
 		}
-		this.radius = .2 * Math.pow(Math.log(this.mass), 2.6); //((mass/Math.PI)*(3/4))*(1/3);
+		this.radius = .3 * Math.pow(Math.log(this.mass), 2.5); //((mass/Math.PI)*(3/4))*(1/3);
 		if (this.radius < 1) {
 			this.radius = 1;
 		}
@@ -146,7 +191,6 @@ function Ball(x, y, dx, dy, mass, movable=true) {
 				this.name = makeWord().capitalize();
 			}
 		}
-		this.draw();
 	}
 
 	this.getDistanceTo = function(other) {
@@ -206,7 +250,7 @@ function main() {
 	}
 
 	// handle camera view
-	if (document.activeElement.id != "input-textbox") {
+	if (!document.activeElement.classList.contains("input-textbox")) {
 		if (upPressed) {
 			yoff -= 10;
 		}
@@ -222,13 +266,13 @@ function main() {
 	}
 
 	// handle aim
-	var parameters = document.getElementById("input-textbox").value.split(" ");
-	for (var i = 0; i < parameters.length; i++) {
-		parameters[i] = parseFloat(parameters[i]);
-	}
-	aim = new Ball(mouseX + xoff, mouseY + yoff, parameters[0], parameters[1], parameters[2]);
+	var newDx = parseFloat(document.getElementById("x-velocity-textbox").value);
+	var newDy = parseFloat(document.getElementById("y-velocity-textbox").value);
+	var newMass = parseFloat(document.getElementById("mass-textbox").value);
+	aim = new Ball(mouseX + xoff, mouseY + yoff, newDx, newDy, newMass, true);
 	aim.color = "#f8f8f8";
 	aim.isAim = true;
+	aimfuture = parseInt(document.getElementById("previews-textbox").value);
 	aim.draw();
 
 	var aimcollision = false;
@@ -243,6 +287,7 @@ function main() {
 					}
 				}
 				aim.update();
+				aim.draw();
 			}
 		}
 	}
@@ -250,6 +295,7 @@ function main() {
 	// update and draw
 	for (var i = 0; i < balls.length; i++) {
 		balls[i].update();
+		balls[i].draw();
 	}
 
 	// draw information
@@ -262,7 +308,9 @@ function main() {
 }
 
 
-// event handled functions
+/****************************************
+* EVENT HANDLERS
+*****************************************/
 window.addEventListener("resize", function() {
 	changeScreenSize();
 });

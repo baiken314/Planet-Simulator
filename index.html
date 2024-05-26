@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planet Simulator</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+    <canvas id="mainCanvas" onclick="makeBall()"></canvas>
+    <div id="input-area">
+        <div class="input-box">
+            <p class="input-label">X Velocity</p>
+            <textarea class="input-textbox" id="x-velocity-textbox" name="x-velocity-box">0</textarea>
+        </div>
+        <div class="input-box">
+            <p class="input-label">Y Velocity</p>
+            <textarea class="input-textbox" id="y-velocity-textbox" name="y-velocity-box">0</textarea>
+        </div>
+        <div class="input-box">
+            <p class="input-label">Mass</p>
+            <textarea class="input-textbox" id="mass-textbox" name="mass-box">500</textarea>
+        </div>
+        <div class="input-box">
+            <p class="input-label">Movable</p>
+            <input type="checkbox" id="movable-checkbox" name="movable-checkbox" checked>
+        </div>
+        <div class="input-box">
+            <p class="input-label">Previews trail</p>
+            <textarea class="input-textbox" id="previews-textbox" name="previews-box">100</textarea>
+        </div>
+        <div class="input-box" id="make-orbit-btn" onclick="findPath()">
+            <p class="input-label">Make Orbit</p>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
