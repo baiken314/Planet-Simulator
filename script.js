@@ -302,7 +302,7 @@ function main() {
 	ctx.font = "15px monospace";
 	ctx.fillStyle = "#f8f8f8";
 	ctx.fillText("X: " + xoff + " Y: " + yoff, 10, 20);
-	ctx.fillText("Number of balls: " + balls.length, 9, 40);
+	ctx.fillText("Number of bodies: " + balls.length, 9, 40);
 
 	requestAnimationFrame(main);
 }
