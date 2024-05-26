@@ -1,0 +1,63 @@
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	font-family: sans-serif;
+	font-size: 12px;
+}
+
+body * {
+	display: block;
+}
+
+canvas {
+	background-color: #090909;
+}
+
+#input-area {
+	height: 75px;
+	width: 100%;
+	background-color: #555;
+}
+
+.input-label {
+	padding-bottom: 5px;
+	font-size: 15px;
+	font-weight: bold;
+	color: #f8f8f8;
+}
+
+.input-textbox {
+	vertical-align: center;
+	padding: 5px;
+	height: 34px;
+	width: 110px;
+	resize: none;
+	font-size: 20px;
+	font-family: monospace;
+	display: block;
+}
+
+.input-box {
+	display: inline-block;
+	width: 110px;
+	padding: 5px;
+	height: 100%;
+}
+
+#create-btn {
+	background-color: #222;
+	border: none;
+	color: #f8f8f8;
+	text-align: center;
+	text-decoration: none;
+	font-weight: bold;
+}
+
+#make-orbit-btn {
+	background-color: #222;
+}
+
+#make-orbit-btn:hover {
+	background-color: #777;
+}
